@@ -3,8 +3,8 @@ if (__ENV.K6_DRUPAL_URL === undefined) {
 }
 
 let baseUrl = __ENV.K6_DRUPAL_URL;
-if (!baseUrl.endsWith('/')) {
-    baseUrl += '/';
+if (baseUrl.endsWith('/')) {
+    baseUrl = baseUrl.slice(0,-1)
 }
 
 export default {
