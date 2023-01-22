@@ -48,3 +48,16 @@ time ./vendor/bin/drush -y site:install demo_umami \
 
 ./vendor/bin/drush user:create k6_author --password=k6_author --mail=k6-author@localhost
 ./vendor/bin/drush user:role:add author k6_author
+
+if [[ $K6_DB_DRIVER == 'mysql' ]]; then
+  chmod 777 $K6_DRUPAL_DIR/sites/default/settings.php
+cat << 'EOF' >> $K6_DRUPAL_DIR/sites/default/settings.php
+
+// @see https://www.drupal.org/project/drupal/issues/2833539
+$databases['default']['default']['init_commands'] = [
+  'isolation' => "SET SESSION tx_isolation='READ-COMMITTED'",
+  'lock_wait_timeout' => 'SET SESSION innodb_lock_wait_timeout = 20',
+  'wait_timeout' => 'SET SESSION wait_timeout = 600',
+];
+EOF
+fi
